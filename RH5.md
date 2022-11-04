@@ -12,6 +12,8 @@ pr { color: Purple }
 <style>
 body{
   font-family: PT Mono;
+  background-color: #202020;
+  color: White;
 }</style>
 
 

@@ -6,12 +6,13 @@ y { color: Yellow }
 lb { color: DeepPink}
 db { color: DodgerBlue}
 pr { color: Purple }
-m {color: Maroon}
 </style>
 
 <style>
 body{
   font-family: PT Mono;
+  background-color: #202020;
+  color: White;
 }</style>
 
 # **Local Users and Groups**
@@ -147,13 +148,13 @@ Format Of **<r>/etc/sudoers</r>**:
 ## **Manage Local User Accounts:**
 
 ### **Creation & Deletion:** 
-### **<o>useradd</o>** [<r>OPTIONS</r>] [<r>USER_NAME</r>] : Creates a user named USER_NAME and a PG called USER_NAME
+### **<o>useradd</o>** [<r>OPTIONS</r>] [<r>USER_NAME</r>] := Creates a user named USER_NAME and a PG called USER_NAME
 ```
     -p, --password [PASSWORD] := Sets the password for the user
     -d, --home-dir := user will be created using HOME_DIR as the value for home directory. 
     -e, --expiredate [YYYY-MM-DD]:= the account will disabled on date [YYYY-MM-DD]
 ```
-### **<o>usermod</o>** [<r>OPTIONS</r>] [<r>USER_NAME</r>] : Modifies a user based on given OPTIONS
+### **<o>usermod</o>** [<r>OPTIONS</r>] [<r>USER_NAME</r>] := Modifies a user based on given OPTIONS
 ```
     -a, --append := combine with '-G' to add secondary groups 
                     to the user's current set of group memberships 
@@ -168,7 +169,7 @@ Format Of **<r>/etc/sudoers</r>**:
 
     usermod -aG [GROUP_NAME] [USER_NAME] => adds USER_NAME to [GROUP_NAME] as SG
 ```
-### **<o>userdel</o>** [<r>OPTIONS</r>] [<r>USER_NAME</r>] : Removes USER_NAME from <r>/etc/passwd</r>, BUT leaves USER_NAME's home dir intact.
+### **<o>userdel</o>** [<r>OPTIONS</r>] [<r>USER_NAME</r>] := Removes USER_NAME from <r>/etc/passwd</r>, BUT leaves USER_NAME's home dir intact.
 ```
     -r. --remove := removes he given users home dir
     -f, --force := forces the removal of given user, even if still loged in. 
@@ -176,7 +177,7 @@ Format Of **<r>/etc/sudoers</r>**:
 ```
 
 ### **Password Modification:**
-### **<o>passwd</o>** [<r>OPTIONS</r>] [<r>USER_NAME</r>] : Attempts to change the password for USER_NAME
+### **<o>passwd</o>** [<r>OPTIONS</r>] [<r>USER_NAME</r>] := Attempts to change the password for USER_NAME
 ```
     -d, --delete := deletes the password for USER_NAME leaving it passwordless
     -e, --expire := expires current password, forcing USER_NAME to change it on next login
@@ -191,47 +192,71 @@ Format Of **<r>/etc/sudoers</r>**:
 ```
 ---
 ## **Manage Local Groups:**
-### **<o>groupadd</o>** [<r>OPTIONS</r>] [<r>GROUP</r>] : Creates a new group account using the specified values.
+### **<o>groupadd</o>** [<r>OPTIONS</r>] [<r>GROUP</r>] := Creates a new group account using the specified values.
 ```
     -g, --gid [GID] := specifies a GID for GROUP
     -p, --password [PASSWORD] := sets group password
     -r, --system := creates a SYSTEM group
 ```
 
-### **<o>groupmod</o>** [<r>OPTIONS</r>] [<r>GROUP</r>] : Changes properties of an existing group GROUP.
+### **<o>groupmod</o>** [<r>OPTIONS</r>] [<r>GROUP</r>] := Changes properties of an existing group GROUP.
 ```
     -n, --new-name [NEW_GROUP] := changes the name of GROUP to NEW_GROUP
     -g, --gid [GID] := changes group's GID to given [GID]
     -p, --password [PASSWORD] := changes password to PASSWORD
 ```
 
-### **<o>groupdel</o>** [<r>OPTIONS</r>] [<r>GROUP</r>] : Deletes GROUP from all system account files
+### **<o>groupdel</o>** [<r>OPTIONS</r>] [<r>GROUP</r>] := Deletes GROUP from all system account files
+```
+    -f, --force := forces removal even if some user has GROUP as PG
+```
+### **Temporarily Changing Groups**: 
+&nbsp;  &nbsp;  &nbsp;  &nbsp;  Useful if you want to create files under different group/user permissions.
+### **<o>newgrp</o>** - [<r>GROUP</r>] := Login to a NEW group
 ```
     -f, --force := forces removal even if some user has GROUP as PG
 ```
 
+---
+
+## **Manage User Passwords & Account Access:**
+&nbsp;  &nbsp;  Originally, encrypted passwords were stored in the world-readable /etc/passwd file. This was considered adequate until dictionary attacks on encrypted passwords became common. The encrypted passwords were moved to the <r>/etc/shadow</r> file, which only the root user can read.
+
+``` 
+File Format:
+    1 | [USER_NAME]:
+      | [ENCRYPTED_PASWORD]:
+      | [DAYS FROM EPOCH LAST PSWD CHANGE]:
+      | [MIN]:
+      | [MAX]:
+      | [PASSWD_WARNING_DAYS]:
+      | [#_INACTIVEDAYS]:
+      | [ACC_EXPIRY_DAYS_SINCE_EPOCH]:
+      | [RESERVED_FOR_FUTURE_USE]
+    2 |         . . .
 ```
-How to change a groups permissions and add/remove members? 
-	1: Add a user
-	| useradd [OPTIONS] [USER_NAME]
-		-p  := assign a password, DEFAULT IS DISABLE PASSWORD
-		-d  := assign a home directory
+![Alt text](Images/6.6_Shadow.png)
+---
+### Format of Encrypted Password:
+```
+| $[HASHING_ALGO_USED]$[SALT]$[ENCRYPTED_HASH]
+```
+&nbsp;  &nbsp;  To verify a password the system adds <db>salt</db> to the types password, encrypts it, and THEN compares it to the <lb>ENCRYPTED PASSWORD</lb>
 
-	1.1 Modify a User
-	| usermod [OPTIONS] [LOGIN] -> Change a user's settings
-		-aG := add a group to the user's secondary groups 
-			| usermod -aG wheel user01
-		-G  := OVERWRITE ALL GROUPS AND MAKE NEW GROUP THE PRIMARY GROUP 
+### Configure Password Aging:
+![Alt text](Images/6.7_PasswdAging.png)
+### **<o>chage</o>** [<r>OPTIONS</r>] [<r>LOGIN</r>] := Alters user password expiry information
+```
+    -d, --lastday [LAST_DAY] := last day (since epoch) password was changed.
+                                if [LAST_DAY] = 0, USER forced to change password.
+                                can be expressed as (YYYY-MM-DD)
+    -E, --expiredate [EXPIRE_DATE] := days (since epoch) when password wille expire.
+                                      can be expressed as (YYYY-MM-DD)
 
+    ** REFER TO 'passwd' COMMAND FOR MORE OPTIONS
+```
 	
-	1.2: Change/Create a Password: ->
-	** MUST BE DONE AS ROOT USER
-	| passwd [OPTIONS] [USER_NAME] -> update USER_NAME's authentication tokens (password) 
-		-d  := delete a password for an account
-		-e  := expire a password for an account
+![Alt text](Images/6.8_Chage_Ex1.png)
 
-	| userdel -> DELETE a user (default does not remove files)
-		-r  := remove all files in and from home directory
-```	
-		
-	
+### Cool Way to Remove Login Permissions for a User: 
+![Alt text](Images/6.8_nologinShell.png)
