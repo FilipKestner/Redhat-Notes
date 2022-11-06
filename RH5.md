@@ -143,7 +143,7 @@ cat [OPTION] [FILE/PATH] '[FILE/PATH]' -> Concatenate files and print to stdout
 
 ### <r>**YOU CAN REDIRECT STDERR THROUGH PIPELINE BUT CANNOT USE MERGING REDIRECTION OPERATORS (&> AND &>>)</r>. The proper way: 
 ![](Images/5.8_T_E2.png)
-&nbsp;  ss
+&nbsp;  
 &nbsp;  
 &nbsp;  
 ## Edit Text Files from Shell Prompt:
