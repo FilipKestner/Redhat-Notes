@@ -296,4 +296,4 @@ pkill EXCLUSIVE:
 ### <o>top</o> := displays linux processes
 
 ![Alt text](Images/8.9_top.png)
-![Alt text](Images/8.10_top_cmds.png)
+![Alt text](Images/8.10_top_cmds.png)ß

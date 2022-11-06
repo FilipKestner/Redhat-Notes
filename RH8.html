@@ -2,7 +2,7 @@
     <html>
     <head>
         <meta charset="UTF-8">
-        <title>Unix Files&comma; Navigation and More</title>
+        <title>Monitor and Manage Linux Processes&colon;</title>
         <style>
 /* From extension vscode.github */
 /*---------------------------------------------------------------------------------------------
@@ -95,306 +95,193 @@ body{
   background-color: #202020;
   color: White;
 }</style>
-<h1 id="unix-files-navigation-and-more">Unix Files, Navigation and More</h1>
-<h2 id="general-useful-commands">General Useful Commands:</h2>
+<h1 id="monitor-and-manage-linux-processes">Monitor and Manage Linux Processes:</h1>
+<h2 id="defining-a-dbprocessdb">Defining a <db>Process</db>:</h2>
+<p>    A <db>process</db> is a <lb>running</lb> instance of a launched and executable program.</p>
+<p>        Upon Creation, Consists of:</p>
+<p>        1. An <y>address</y> of allocated memory</p>
+<p>        2. <y>Security properties</y> including permissions and ownership</p>
+<p>        3. One or more <y>execution threads</y> of program code</p>
+<p>        4. A process <y>state</y></p>
+<p>   </p>
+<p>        The <db>environment</db> of a <db>process</db> is a list of information including:</p>
+<p>        1. Global and local variables</p>
+<p>        2. Current scheduling context</p>
+<p>        3. Allocated system resources (file descriptors, network ports)</p>
+<p>   </p>
+<p>Any process can <db>fork</db> in order to <lb>spawn</lb> a <db>child process</db>.</p>
+<p>        <db>fork</db> := duplicate it's own address space</p>
+<p>        <db> child process</db> := a process created by a <db>parent process</db> (RELATIVE)</p>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.1_Prsc.png" alt="Alt text"></p>
+<h3 id="child-process-creation--management">Child Process Creation &amp; Management:</h3>
+<p><r> 1. </r> Through a <db>fork</db> the <db>CHILD</db> inherits:</p>
+<ul>
+<li>security identities</li>
+<li>previous and current file descriptos</li>
+<li>port and resource priveleges</li>
+<li>envrionment variables</li>
+<li>program code</li>
+</ul>
+<p>    NOW THE <db>CHILD</db> CAN <lb> EXECUTE ITS OWN PROGRAM CODE</lb>!</p>
+<p><r>2.</r> NORMALLY <db>PARENT</db><lb> SLEEPS</lb> WHILE <db>CHILD</db> <lb>RUNS</lb></p>
+<p>    <code>wait request</code> is set upon <db>fork</db> and <lb>signalled</lb> upon <db>CHILD</db><r> COMPLETION</db></p>
+<p><r>3.</r> When <db>CHILD</db> <r>EXITS</r></p>
+<ol>
+<li>it closes or discards its resources and environment</li>
+<li>leaves a <r>ZOMBIE RESOURCE</r> (:= entry in process table)</li>
+<li><db>PARENT</db> is <lb>SIGNALED TO WAKE</lb> &amp;  CLEANS process table of <db>child</db> entry.</li>
+<li><db>PARENT</db> continues its own program code execution</li>
+</ol>
+<p><r>**</r> A process which has <r>NO</r> <db>PARENT PROCESS</db> is referred to as a <r>zombie</r> process</p>
+<p>   </p>
 <hr>
-<h3 id="whoami---returns-current-userid"><strong><span style="color:orange">whoami</span></strong>  := returns current userID</h3>
-<pre><code class="language-shell"><div>[fkestner@localhost ~]$ whoami 
-fkestner
-</div></code></pre>
-<p> </p>
-<h3 id="passwd----changes-current-users-password"><strong><span style="color:orange">passwd</span></strong>  :=  changes current user's password</h3>
-<pre><code class="language-shell"><div>[fkestner@localhost ~]$ passwd
-Changing password for user fkestner.
-Current password: *********
-New password: *********
-</div></code></pre>
-<p>
-<br>
+<h2 id="describing-process-states">Describing Process States:</h2>
+<h3 id="each-cpucpu-core-can-run-a-single-dbprocessdb-at-a-time-immediate-process-requirments-for-ycpu-timey--yresource-allocationy-constantly-change-as-such-the-lbstates-of-alb-dbprocessdb-are-also-lbalways-changinglb-as-cirumstances-dictate">Each CPU/CPU-Core can run a single <db>process</db> at a time. Immediate process requirments for <y>CPU time</y> &amp; <y>resource allocation</y> constantly change. As such the <lb>states of a</lb> <db>process</db> are also <lb>always changing</lb> as cirumstances dictate.</h3>
+<p>   </p>
+<h3 id="linux-process-states-in-detail"><strong>Linux Process States in Detail:</strong></h3>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.2_PrscStates.png" alt="Alt text">
+<img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.3_PrscStates2.png" alt="Alt text"></p>
+<h3 id="opso-roptionr--report-a-snapshot-of-the-current-processes"><o>ps</o> [<r>OPTION</r>] := report a snapshot of the current processes</h3>
+<pre><code><code><div>    -aux := list EVERY process using BSD syntax
+    -lax := provides a long listing and displays faster
+    -ef  := display all processes
+    -j   := displays information about jobs 
+            ( PPID | PID | PGID | SID | TTY | TGPID | STAT | UID | TIME | COMMAND )
+                                                       ^^(Process State Letter)
 
-</p>
-<h2 id="basic-file-reading">Basic File Reading</h2>
-<hr>
-<p>
-<br>
-
-</p>
-<h3 id="file--path----determines-file-type-of--path-"><strong><span style="color:orange">file</span></strong> [ <strong><span style="color:red">PATH</span></strong> ]  := Determines file type of [ <strong><span style="color:red">PATH</span></strong> ]</h3>
-<pre><code class="language-shell"><div>cat [OPTION] [FILE/PATH] &#x27;[FILE/PATH]&#x27; -&gt; Concatenate files and print to stdout
-	-A  := show all (eq. to -vET) 
-	-b  := numbers nonempty output lines 
-	-n  := number ALL output lines 
-</div></code></pre>
-<p> </p>
-<h3 id="head--option---file_path---output-first-10-lines-of-a-given-file"><strong><span style="color:orange">head</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">FILE_PATH</span></strong> ] := Output FIRST 10 lines of a given file</h3>
-<pre><code class="language-shell"><div>	-n[NUM]   := prints NUM lines instead of first 10 
-    -[NUM]   := with &#x27;-&#x27; it prints ALL LINES EXCEPT LAST NUM 
-
-	-c[NUM]   := print NUM bytes in file instead of 10 first
-	-[NUM]   := print ALL bytes EXCEPT LAST NUM amount
-</div></code></pre>
-<p> </p>
-<h3 id="tail--option---file_path---output-last-10-lines-of-a-given-file"><strong><span style="color:orange">tail</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">FILE_PATH</span></strong> ] := Output LAST 10 lines of a given file</h3>
-<pre><code class="language-shell"><div>	-n[NUM]  := output last [NUM] lines instead of last 10
-    +[NUM]  := output starting from line NUM 
-
-	-c[NUM]  := output last [NUM] bytes
-	+[NUM]  := output each line starting from NUM byte in each line
-</div></code></pre>
-<p> </p>
-<h3 id="less--file_path---go-through-a-file"><strong><span style="color:orange">less</span></strong> [ <strong><span style="color:red">FILE_PATH</span></strong> ] := go through a file</h3>
-<pre><code><code><div>    -M := display line numbers
+    -O [FORMAT] := sorts by given format 
 </div></code></code></pre>
-<h3 id="wc--option---file_path---print-newline-char-byte-and-word-count"><strong><span style="color:orange">wc</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">FILE_PATH</span></strong> ] := print newLine Char, byte and word count</h3>
-<h3 id="-file_range---figure-out-what-i-meant-here">       [ <strong><span style="color:red">FILE_RANGE</span></strong> ] ?= Figure out what I meant here</h3>
-<p>       <span style="color:SteelBlue">**When there is NO FILE or file == '-', it reads STDIN</span></p>
-<pre><code class="language-shell"><div>	-c  := print byte count
-	-m  := print char count
-	-l  := print newline count
-	-L  := print maximum display width
-	-w  := print word count 
-</div></code></pre>
-<h3 id="history--displays-contents-designated-history-file-history-of-commands"><strong><span style="color:orange">history</span></strong> := displays contents designated history file (history of commands)</h3>
-<p> </p>
-<h4 id="sidenote"><span style="color:SteelBlue">SideNote:</span></h4>
-<p>    <span style="color:SteelBlue">** ' \ ' escape char lets you write commands on multiple lines</span><br>
-    <span style="color:SteelBlue">** ' ; ' ends a command and lets you write another. LIKE JAVA</span></p>
-<p>
-<br>
-
-</p>
-<h2 id="structure-of-the-root-folder">Structure of the Root Folder:</h2>
-<hr>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.1_RootFolderStructure.png" alt="Root Folder Structure"></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">/boot := Files to START BOOT PROCESS.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">/dev  := Special DEVICE FILES that the SYSTEM USES TO ACCESS HARDWARE.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/etc  := CONFIG FILES.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/home := Regular users store data and config files.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/root := Home directory of ROOT or SU USER.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/run  := Runtime data for processes that started since the last boot. Process ID files and lock files.
-The contents of this directory are re-created on reboot.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;"> /tmp  := A world-writable space for temporary files. Files that are not accessed, changed, or modified for 10 days are deleted from this directory automatically. The /var/tmp directory is also a temporary directory, in which files that are not accessed, changed, or modified in more than 30 days are deleted automatically.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/usr   := Installed software, shared libraries, including files, and read-only program data.
-Significant subdirectories include:
-</br>
-    <span style="color:Yellow">/usr/bin:</span>
-User commands.
-</br>
-    <span style="color:Yellow">/usr/sbin:</span>
-System administration commands
-</br>
-    <span style="color:Yellow">/usr/local:</span>
-Locally customized software.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/var   := System-specific variable data should persist between boots. Files that dynamically change, such as databases, cache directories, log files, printer-spooled documents, and website content, might be found under /var. </span>
- <br>
- </p>
-<h2 id="manipulating-the-file-system">Manipulating the File System:</h2>
-<hr>
-<h3 id="pwd--get-absolute-path-to-current-directory"><strong><span style="color:orange">pwd</span></strong> := get absolute path to current directory</h3>
-<p> </p>
-<h3 id="touch--option---path----changes-file-access-timestamps-but-can-create-a-file"><strong><span style="color:orange">touch</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">PATH</span></strong> ]  := Changes file access timestamps, but CAN CREATE A FILE.</h3>
-<pre><code class="language-shell"><div>    -c, --no-create      := do not create any files
-    -h, --no-dereference := affect symbolic link instead of referenced file.
-                            (useful only on sys. that can change timestamps of a symlink)
-</div></code></pre>
-<p> </p>
-<h4 id="sidenote-1"><span style="color:SteelBlue">SideNote:</span></h4>
-<p>    <span style="color:SteelBlue">** File names beggining with ' . ' are HIDDEN FILES </span></p>
-<pre><code class="language-shell"><div>    USE THIS to SHOW HIDDEN FILES ANY DIRECTORIES:
-        | ls -A 
-</div></code></pre>
-<p> </p>
-<h3 id="mkdir--option---path----make-a-directory"><strong><span style="color:orange">mkdir</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">PATH</span></strong> ]  := Make a directory</h3>
-<pre><code class="language-shell"><div>	-p  := make parent directories as needed **Generates NO ERROR MESSAGES
-	-v  := &#x27;verbose&#x27; print message for each dir created
-</div></code></pre>
-<p> </p>
-<h3 id="mv--option---source_path---dest_path----move-or-rename-filedirectory"><strong><span style="color:orange">mv</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">SOURCE_PATH</span></strong> ] [ <strong><span style="color:red">DEST_PATH</span></strong> ]  := Move OR RENAME file/directory</h3>
-<pre><code class="language-shell"><div>	-b  := backup 
-	-n  := &#x27;no clobber&#x27; meaning DO NOT OVERWRITE
-</div></code></pre>
-<p> </p>
-<h3 id="rm--option---path----remove-file-or-directory"><strong><span style="color:orange">rm</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">PATH</span></strong> ]  := Remove file or directory</h3>
-<pre><code class="language-shell"><div>	-i  := prompt before every removal 
-	-r  := remove RECURSIVELY
-	-v  := display what is being done 
-    -f  := ignore nonexsitent files and args, never prompt
-</div></code></pre>
-<p>    <span style="color:SteelBlue">** Using 'rm -if ...' WILL NOT prompt you before every removal as the -f options takes precidence. </span><br>
- </p>
-<h3 id="rmdir--removes-empty-directories"><strong><span style="color:orange">rmdir</span></strong> := Removes empty directories</h3>
-<p> 
- </p>
-<h2 id="links-between-files">Links Between Files</h2>
-<hr>
-<p>You can create multiple file name that point to the same file. These file names are called links. You can create two types of these links: Hard Links &amp; Soft Links.</p>
-<h3 id="hard-links"><strong><span style="color:DodgerBlue">Hard Links:</span></strong></h3>
-<pre><code>:= Another file that points to the SAME DATA, acting exactly as the original file. After creation there is no difference between original nad new Hard Link file.
-</code></pre>
-<h3 id="you-can-determine-how-many-hls-a-file-has-by-executing-the-following-command">You can determine how many HLs a file has by executing the following command:</h3>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.2_HardLink.png" alt="">
- </p>
-<h3 id="to-create-a-hard-link">To Create a Hard Link:</h3>
-<h3 id="ln--option---target---destination----make-a-new-link"><strong><span style="color:orange">ln</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">TARGET</span></strong> ] [ <strong><span style="color:red">DESTINATION</span></strong> ]  := Make a new link</h3>
-<pre><code class="language-shell"><div>	-b  := make a backup of each existing destination file
-    -f  := remove existing destination files
-    -i  --interactive := prompt when removing destinations
-    -L  --logical     := dereference TARGETs that are symbolic links
-    -s  := creates symbolic link 
-</div></code></pre>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.2_HardLinkGuide.png" alt=""></p>
-<p>**To check if there is a <em><span style="color:DodgerBlue">Hard Link</span></em> between files execute the following command (' ln -i ') and compare the inode numbers (circled in red below).</p>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.2_HardLinkDetect.png" alt=""></p>
-<p>** Even if the original file is deleted you CAN STILL ACESS THE CONTENTS provided there is at least one other HL that exists. Data is deleted from storage whith the LAST HL.</p>
-<h3 id="limitations-of-hard-links"><span style="color:Red">Limitations of Hard Links:</span></h3>
-<pre><code><code><div>    - You can only use Hard Links with regular files (no dir or special files)
-    - Can only use HL if both files ARE IN THE SAME FILE SYSTEM (Ex. Diff. Mounted Dir)
+<h3 id="opstreeo-roptionr--display-a-tree-of-processes"><o>pstree</o> [<r>OPTION</r>] := display a TREE of processes</h3>
+<pre><code><code><div>    -g := show PGIDs
+    -p := show PIDs
 </div></code></code></pre>
-<h3 id="df--list-all-dirs-on-different-file-systems"><strong><span style="color:orange">df</span></strong> := List all dirs on different file systems</h3>
+<hr>
+<h2 id="control-jobs">Control Jobs:</h2>
+<p>Any <lb>command</lb> OR <lb>pipeline</lb> can be STARTED IN <r>BACKGROUND</r> by appending an <r>ampersand</r> (<r>&amp;</r>) to it. Bash <y>displays job number</y> (unique to session) and <y> child process</y> <db>PID</db></p>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.4_BackGPS.png" alt="Alt text"></p>
+<h3 id="ojobso--dissplays-the-list-of-jobs-for-current-shell-session"><o>jobs</o> := dissplays the list of jobs for current shell session</h3>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.5_BackGPS2.png" alt="Alt text"></p>
+<h3 id="ofgo-rjob-r-brings-rjob-r-into-the-foreground"><o>fg</o> %[<r>JOB #</r>]:= brings <r>JOB $</r> into the foreground</h3>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.6_BackGPS3.png" alt="Alt text"></p>
+<h3 id="obgo-rjob-r-starts-running-suspended-process-rjob-r"><o>bg</o> %[<r>JOB #</r>]:= STARTS RUNNING SUSPENDED PROCESS <r>JOB #$</r></h3>
+<p> </p>
+<h3 id="rr-ctr-z---generates-a-rsuspend-requestr-for-current-fg-process"><r>**</r> <strong><code>CTR-Z</code></strong> -&gt; Generates a <r>SUSPEND REQUEST</r> for current fg process</h3>
+<hr>
+<h2 id="kill-processes">Kill Processes:</h2>
+<p>      A <db>signal</db> is a <lb>software interrupt delivered to</lb> a <lb>PROCESS</lb>. Evens that can generate signals include an <pr> error</pr>, an <pr>external event</pr> (IO req. or expired timer) or by EXPLICTELY SENDING A SIGNAL.</p>
+<p>Each <db>signal</db> has a DEFAULT BEHAVIOR, usually:</p>
+<p>                1. <y>Term</y>: Terminate a program (<r>exit</r>) at once.</p>
+<p>                2. <y>Core</y>: Save memory image (<db>core dump</db>), then terminate</p>
+<p>                3. <y>Stop</y>: Stop a running program (<r>suspend</r>) and wait to continue (<r>resume</r>).</p>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.7_KillSignals.png" alt="Alt text"></p>
+<p> </p>
+<h3 id="okillo-roptionr-rnamerrpidr-of-p-to-kill--terminate-a-process"><o>kill</o> [<r>OPTION</r>] [<r>NAME</r>/<r>PID</r> of P to Kill] := terminate a process</h3>
+<pre><code><code><div>    -s, --signal [signal] := provides the signal to send (given as name or number)
+
+
+    -p, --pid := only print the PID of named process, DO NOT SEND SIGNAL
+    --verbose := print PID(s) that will be signaled with kill and SEND SIGNAL
+</div></code></code></pre>
+<p>      ** Each <db>PID</db> can express as:</p>
+<p>            <r>n</r>  := (n&gt;0) | <db>PID</db> <r>n</r> is signalled</p>
+<p>           <r>0</r>  := all processes in current process group are signalled</p>
+<p>           <r>-1</r> := all process with <db>PID</db> &gt; 1 are signalled</p>
+<p>            <r>+n</r> := (n&gt;0) | All process in process group <r>n</r> are signalled</p>
+<p>            <r>NAME</r> := process <r>NAME</r> will be signalled</p>
+<p> </p>
+<h3 id="okillallo-roptionr-rnamer--kill-processes-by-name"><o>killall</o> [<r>OPTION</r>] [<r>NAME</r>] := kill processes by NAME</h3>
+<pre><code><code><div>    -I, --ignore-case := ignore case when searching 
+    -e, --exact := requires an EXACT match.
+                   ** If a command is &gt; 15 chars the full name may be unavailable at which
+                      case it will KILLALL THAT MATCHES FIRST 15 CHARS. '-e' will SKIP
+                      these entries but will specify which are skipped if using '-v'.
+
+    -i, --interactive := ask for confirmation for each kill
+
+</div></code></code></pre>
 <p> <br>
  </p>
-<h3 id="symbolic-links"><strong><span style="color:DodgerBlue">Symbolic Links:</span></strong></h3>
-<pre><code>:= Also known as a 'Soft Link' , not a regular file but a special type of file that points to an existing FILE OR DIRECTORY. 
+<h3 id="opkillo-roptionr-rpatternr--send-signal-to-each-process-instead-of-listing-to-stdout"><o>pkill</o> [<r>OPTION</r>] [<r>PATTERN</r>] := send signal to each process instead of listing to stdout</h3>
+<p> </p>
+<h3 id="opgrepo-roptionr-rpatternr--looks-through-currently-running-processes-and-lists-the-pids-which-match-rpattermr-to-stdout"><o>pgrep</o> [<r>OPTION</r>] [<r>PATTERN</r>] := looks through currently running processes and lists the PIDs which match [<r>PATTERM</r>] to stdout</h3>
+<p> </p>
+<h3 id="opidwaito-roptionr-rpatternr--will-wait-for-each-process-instead-of-listing-to-stdout"><o>pidwait</o> [<r>OPTION</r>] [<r>PATTERN</r>] := will WAIT for each process instead of listing to stdout</h3>
+<pre><code><code><div>    -u, --euid [euid] := only match process whose EUID is given (numerical or sumbolic value)
+    -U, --uid [uid]   := only match process whose UID is given (numerical or symbolic value)
 
-A symbolic link pointing to a directory ACTS as that directory. So when you switch to the symbolic link it takes to the appropriately linked directory. 
-</code></pre>
-<h3 id="advantages-over-hard-links"><span style="color:Green">Advantages Over Hard Links:</span></h3>
-<pre><code><code><div>    - Symbolic links can link two files on different systems
-    - Symbolic links can point to a directory or special file, not just to a regular file. 
+    -g, --pgroup [pgroup] := only match process in PGIDs listed
+    -G, --group [GID] := only match process in GIDs listed
+    
+pkill EXCLUSIVE:
+    -e, --echo := disply NAME and PID of process being killed 
+    -[SIGNAL] OR --signal [SIGNAL] := dictates which signal to send to each process
 </div></code></code></pre>
-<h3 id="to-create-a-symbolic-link">To Create a Symbolic Link:</h3>
-<pre><code><code><div>    ln -s [OPTIONS] [TARGET] [DESTINATION]
-</div></code></code></pre>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.3_SymbolicLinkGuide.png" alt="">
-    ** The '-' missing and 'l' in its place before the symboLink file indicates that it is a <span style="color:DodgerBlue">SYMBOLIC LINK </span></p>
-<p>    ** When a file with a symbolic link gets deleted, the <span style="color:DodgerBlue">SYMBOLIC LINK </span> becomes a <span style="color:red">DANGLING SYMBOLIC LINK </span>
- <br>
- </p>
-<h3 id="a-hard-link--points-to-data">A <span style="color:DodgerBlue">HARD LINK </span> POINTS TO DATA</h3>
-<h3 id="a-symbolic-link--points-a-name-to-another-name">A <span style="color:DodgerBlue">SYMBOLIC LINK </span> POINTS A NAME TO ANOTHER NAME</h3>
-<p> <br>
- </p>
-<h2 id="match-file-names-with-shell-expansions">Match File Names with Shell Expansions:</h2>
 <hr>
-<h3 id="pattern-matching">Pattern Matching:</h3>
-<table>
-<thead>
-<tr>
-<th>Pattern</th>
-<th>Matches</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>*</td>
-<td>Any string of zero or more characters.</td>
-</tr>
-<tr>
-<td>?</td>
-<td>Any single character.</td>
-</tr>
-<tr>
-<td>[abc…​]</td>
-<td>Any one character in the enclosed class (between the square brackets).</td>
-</tr>
-<tr>
-<td>[!abc…​]</td>
-<td>Any one character not in the enclosed class.</td>
-</tr>
-<tr>
-<td>[^abc…​]</td>
-<td>Any one character not in the enclosed class.</td>
-</tr>
-<tr>
-<td>[[:alpha:]]</td>
-<td>Any alphabetic character.</td>
-</tr>
-<tr>
-<td>[[:lower:]]</td>
-<td>Any lowercase character.</td>
-</tr>
-<tr>
-<td>[[:upper:]]</td>
-<td>Any uppercase character.</td>
-</tr>
-<tr>
-<td>[[:alnum:]]</td>
-<td>Any alphabetic character or digit.</td>
-</tr>
-<tr>
-<td>[[:punct:]]</td>
-<td>Any printable character that is not a space or alphanumeric.</td>
-</tr>
-<tr>
-<td>[[:digit:]]</td>
-<td>Any single digit from 0 to 9.</td>
-</tr>
-<tr>
-<td>[[:space:]]</td>
-<td>Any single white space character, which might include tabs, newlines, carriage returns, form feeds, or spaces.</td>
-</tr>
-</tbody>
-</table>
+<h2 id="administratively-log-out-users">Administratively Log Out Users:</h2>
+<h3 id="1-identify-login-session">1: Identify Login Session:</h3>
+<h3 id="owo-roptionr--show-who-is-logged-on-and-what-they-are-doing">       <o>w</o> [<r>OPTION</r>] := Show who is logged on and what they are doing</h3>
+<pre><code><code><div>    -s, --short := display in short format
+    -i, --ip-addr := display IP address instead of host name for 'from' field
+</div></code></code></pre>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.8_Logout.png" alt="Alt text"></p>
+<h3 id="2-identify-pid-numbers-to-kill-">2: Identify PID Numbers to Kill :</h3>
+<p>      Using <o>pgrep</o> we get all of 'bob's processes</p>
+<pre><code><code><div>    [root@host ~]# pgrep -l -u bob
+    6964 bash
+    6998 sleep
+    6999 sleep
+    7000 sleep
+    . . . . . .
+</div></code></code></pre>
+<h3 id="3-execute-kill-command">3: Execute Kill Command:</h3>
+<pre><code><code><div>    . . . . . .
+    [root@host ~]# pkill -SIGKILL -u bob
+    [root@host ~]# pgrep -l -u bob
+</div></code></code></pre>
+<p> </p>
+<h3 id="rr-instead-of-killing-all-processes-you-could-also-just-lbkill-terminal-idlb"><r>**</r> Instead of killing all processes you could also just <lb>KILL TERMINAL ID</lb></h3>
+<pre><code><code><div>    [root@host ~]# pgrep -l -u bob
+    7391 bash
+    7426 sleep
+    7427 sleep
+    7428 sleep
+    [root@host ~]# w -h -u bob
+    bob      tty3      18:37    5:04   0.03s  0.03s -bash
+    [root@host ~]# pkill -t tty3
+    [root@host ~]# pgrep -l -u bob
+    7391 bash
+    [root@host ~]# pkill -SIGKILL -t tty3
+    [root@host ~]# pgrep -l -u bob
+    [root@host ~]#
+</div></code></code></pre>
+<h3 id="rr-this-process-for-killing-parents-to-kill-children-is-very-useful"><r>**</r> This process for killing parents to kill children is VERY USEFUL</h3>
+<pre><code><code><div>    [root@host ~]# pstree -p bob
+    bash(8391)─┬─sleep(8425)
+            ├─sleep(8426)
+            └─sleep(8427)
+    [root@host ~]# pkill -P 8391
+    [root@host ~]# pgrep -l -u bob
+    bash(8391)
+    [root@host ~]# pkill -SIGKILL -P 8391
+    [root@host ~]# pgrep -l -u bob
+    bash(8391)
+</div></code></code></pre>
 <hr>
+<h2 id="monitor-process-activity">Monitor Process Activity:</h2>
+<h3 id="dbload-averagedb-the-measurement-linux-provides-to-represent-lbpercieved-system-loadlb-of-a-given-process"><db>Load Average</db>: The measurement Linux provides to represent <lb>percieved system load</lb> of a given process.</h3>
 <p> <br>
- </p>
-<h3 id="tilde-expansion">Tilde Expansion:</h3>
-<p>     Tilde <span style="color:Yellow">(~) matches the current user's home directory. </span>  If it starts with a string of characters other than slash (/), then the shell interprets the string up to the slash as a user name.</p>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.4_TildeExpansion.png" alt=""></p>
-<h3 id="brace-expansion">Brace Expansion:</h3>
-<p>     Used to generate discretionary strings of characters. So basically all strings of characters seperated by a comma, is used to create multiple versions with each string in the brackets:</p>
-<pre><code><code><div>[user@host glob]$ echo {Sunday,Monday,Tuesday,Wednesday}.log
-        Sunday.log Monday.log Tuesday.log Wednesday.log
-
-[user@host glob]$ echo file{1..3}.txt
-        file1.txt file2.txt file3.txt
-
-[user@host glob]$ echo file{a..c}.txt
-        filea.txt fileb.txt filec.txt
-
-[user@host glob]$ echo file{a,b}{1,2}.txt
-        filea1.txt filea2.txt fileb1.txt fileb2.txt
-
-[user@host glob]$ echo file{a{1,2},b,c}.txt
-        filea1.txt filea2.txt fileb.txt filec.txt
+       Calculating <db>Load Average</db>:</p>
+<p>            <r>AVG</r>(# of process in <db>R</db> (ready to run) state or <db>D</db> (waiting for I/O to complete) state.</p>
+<p>            <r>AVG</r>(#<db>R</db>_processes + #<db>D</db>_processes)</p>
+<p> </p>
+<h3 id="ouptimeo-roptionr--tell-how-long-sys-has-been-running-including-dbload-averagedb"><o>uptime</o> [<r>OPTION</r>] := Tell how long sys. has been running INCLUDING <db>load average</db></h3>
+<pre><code><code><div>    [user@host ~]$ uptime
+    15:29:03 up 14 min,  2 users,  load average: 2.92, 4.48, 5.20top
+                                  time(min) = .   ^5    ^10   ^ 15 
 </div></code></code></pre>
-<h3 id="variable-expansion">Variable Expansion:</h3>
-<p>     A variable acts like a named container, storing a value in memory. Variables simplify accessing and modifying the stored data either from the command line or within a script.</p>
-<h4 id="declare-a-variable">Declare a Variable:</h4>
-<pre><code class="language-shell"><div>[user@host ~]$ VARIABLENAME=value
-</div></code></pre>
-<h4 id="use-a-variable">Use a Variable:</h4>
-<pre><code class="language-shell"><div>[user@host ~]$ USERNAME=operator
-[user@host ~]$ echo $USERNAME
-    operator
----------------------------------
-[user@host ~]$ USERNAME=operator
-[user@host ~]$ echo ${USERNAME}
-    operator
-</div></code></pre>
-<h4 id="command-subtitution">Command Subtitution:</h4>
-<p>     Allows the output of a command to replace the command itself on the command line. Basically enclosing a command in another command.</p>
-<pre><code class="language-shell"><div>[user@host glob]$ echo Today is $(date +%A).
-Today is Wednesday.
-
-[user@host glob]$ echo The time is $(date +%M) minutes past $(date +%l%p).
-The time is 26 minutes past 11AM.
-</div></code></pre>
-<h4 id="escape-characters">    Escape Characters:</h4>
-<p>         Double Quotations (&quot; &quot;) Marsks Supressing Globbing &amp; Shell Expansion</p>
-<pre><code><code><div>[user@host glob]$ myhost=$(hostname -s); echo $myhost
-host
-
-[user@host glob]$ echo &quot;***** hostname is ${myhost} *****&quot;
-***** hostname is host *****
-</div></code></code></pre>
-<p>         Single Quotes (' ') to Interpret ALL TEXT LITERALLY:</p>
-<pre><code><code><div>[user@host glob]$ echo &quot;Will variable $myhost evaluate to $(hostname -s)?&quot;
-Will variable host evaluate to host?
-
-[user@host glob]$ echo 'Will variable $myhost evaluate to $(hostname -s)?'
-Will variable $myhost evaluate to $(hostname -s)?
-</div></code></code></pre>
+<h3 id="otopo--displays-linux-processes"><o>top</o> := displays linux processes</h3>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.9_top.png" alt="Alt text">
+<img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/8.10_top_cmds.png" alt="Alt text">ß</p>
 
         <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
         

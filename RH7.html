@@ -2,7 +2,7 @@
     <html>
     <head>
         <meta charset="UTF-8">
-        <title>Unix Files&comma; Navigation and More</title>
+        <title>&ast;&ast;Controlling File Access &amp; Permissions&ast;&ast;</title>
         <style>
 /* From extension vscode.github */
 /*---------------------------------------------------------------------------------------------
@@ -63,8 +63,7 @@
 }
 
 </style>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
-<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
 <style>
@@ -95,308 +94,98 @@ body{
   background-color: #202020;
   color: White;
 }</style>
-<h1 id="unix-files-navigation-and-more">Unix Files, Navigation and More</h1>
-<h2 id="general-useful-commands">General Useful Commands:</h2>
-<hr>
-<h3 id="whoami---returns-current-userid"><strong><span style="color:orange">whoami</span></strong>  := returns current userID</h3>
-<pre><code class="language-shell"><div>[fkestner@localhost ~]$ whoami 
-fkestner
-</div></code></pre>
-<p> </p>
-<h3 id="passwd----changes-current-users-password"><strong><span style="color:orange">passwd</span></strong>  :=  changes current user's password</h3>
-<pre><code class="language-shell"><div>[fkestner@localhost ~]$ passwd
-Changing password for user fkestner.
-Current password: *********
-New password: *********
-</div></code></pre>
-<p>
-<br>
+<h1 id="controlling-file-access--permissions"><strong>Controlling File Access &amp; Permissions</strong></h1>
+<h2 id="interpret-file-permissions">Interpret File Permissions:</h2>
+<p>    There are 3 types of file permissions:</p>
+<p>         <r>r</r> read : Read file contents and contents of directory can be listed</p>
+<p>         <r>w</r> write : Alter file contents and create/delete files in directory</p>
+<p>         <r>x</r> execute : Execute file as commands and directory can become working directory
+<img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/7.1_Permissions.png" alt="Alt text"></p>
+<p>Permissions are Listed as:</p>
+<pre><code><code><div>[FILE_TYPE_CHAR]rwxrwxrwc
 
-</p>
-<h2 id="basic-file-reading">Basic File Reading</h2>
-<hr>
-<p>
-<br>
-
-</p>
-<h3 id="file--path----determines-file-type-of--path-"><strong><span style="color:orange">file</span></strong> [ <strong><span style="color:red">PATH</span></strong> ]  := Determines file type of [ <strong><span style="color:red">PATH</span></strong> ]</h3>
-<pre><code class="language-shell"><div>cat [OPTION] [FILE/PATH] &#x27;[FILE/PATH]&#x27; -&gt; Concatenate files and print to stdout
-	-A  := show all (eq. to -vET) 
-	-b  := numbers nonempty output lines 
-	-n  := number ALL output lines 
-</div></code></pre>
-<p> </p>
-<h3 id="head--option---file_path---output-first-10-lines-of-a-given-file"><strong><span style="color:orange">head</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">FILE_PATH</span></strong> ] := Output FIRST 10 lines of a given file</h3>
-<pre><code class="language-shell"><div>	-n[NUM]   := prints NUM lines instead of first 10 
-    -[NUM]   := with &#x27;-&#x27; it prints ALL LINES EXCEPT LAST NUM 
-
-	-c[NUM]   := print NUM bytes in file instead of 10 first
-	-[NUM]   := print ALL bytes EXCEPT LAST NUM amount
-</div></code></pre>
-<p> </p>
-<h3 id="tail--option---file_path---output-last-10-lines-of-a-given-file"><strong><span style="color:orange">tail</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">FILE_PATH</span></strong> ] := Output LAST 10 lines of a given file</h3>
-<pre><code class="language-shell"><div>	-n[NUM]  := output last [NUM] lines instead of last 10
-    +[NUM]  := output starting from line NUM 
-
-	-c[NUM]  := output last [NUM] bytes
-	+[NUM]  := output each line starting from NUM byte in each line
-</div></code></pre>
-<p> </p>
-<h3 id="less--file_path---go-through-a-file"><strong><span style="color:orange">less</span></strong> [ <strong><span style="color:red">FILE_PATH</span></strong> ] := go through a file</h3>
-<pre><code><code><div>    -M := display line numbers
 </div></code></code></pre>
-<h3 id="wc--option---file_path---print-newline-char-byte-and-word-count"><strong><span style="color:orange">wc</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">FILE_PATH</span></strong> ] := print newLine Char, byte and word count</h3>
-<h3 id="-file_range---figure-out-what-i-meant-here">       [ <strong><span style="color:red">FILE_RANGE</span></strong> ] ?= Figure out what I meant here</h3>
-<p>       <span style="color:SteelBlue">**When there is NO FILE or file == '-', it reads STDIN</span></p>
-<pre><code class="language-shell"><div>	-c  := print byte count
-	-m  := print char count
-	-l  := print newline count
-	-L  := print maximum display width
-	-w  := print word count 
-</div></code></pre>
-<h3 id="history--displays-contents-designated-history-file-history-of-commands"><strong><span style="color:orange">history</span></strong> := displays contents designated history file (history of commands)</h3>
-<p> </p>
-<h4 id="sidenote"><span style="color:SteelBlue">SideNote:</span></h4>
-<p>    <span style="color:SteelBlue">** ' \ ' escape char lets you write commands on multiple lines</span><br>
-    <span style="color:SteelBlue">** ' ; ' ends a command and lets you write another. LIKE JAVA</span></p>
-<p>
-<br>
-
-</p>
-<h2 id="structure-of-the-root-folder">Structure of the Root Folder:</h2>
-<hr>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.1_RootFolderStructure.png" alt="Root Folder Structure"></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">/boot := Files to START BOOT PROCESS.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">/dev  := Special DEVICE FILES that the SYSTEM USES TO ACCESS HARDWARE.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/etc  := CONFIG FILES.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/home := Regular users store data and config files.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/root := Home directory of ROOT or SU USER.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/run  := Runtime data for processes that started since the last boot. Process ID files and lock files.
-The contents of this directory are re-created on reboot.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;"> /tmp  := A world-writable space for temporary files. Files that are not accessed, changed, or modified for 10 days are deleted from this directory automatically. The /var/tmp directory is also a temporary directory, in which files that are not accessed, changed, or modified in more than 30 days are deleted automatically.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/usr   := Installed software, shared libraries, including files, and read-only program data.
-Significant subdirectories include:
-</br>
-    <span style="color:Yellow">/usr/bin:</span>
-User commands.
-</br>
-    <span style="color:Yellow">/usr/sbin:</span>
-System administration commands
-</br>
-    <span style="color:Yellow">/usr/local:</span>
-Locally customized software.</span></p>
-<p><span style="color:#fff; font-family: 'PT Mono'; font-size: 1em;">	/var   := System-specific variable data should persist between boots. Files that dynamically change, such as databases, cache directories, log files, printer-spooled documents, and website content, might be found under /var. </span>
+<p>        [<r> FILE_TYPE_CHAR </r>] :=</p>
+<p>                <strong><y>-</y></strong> : a regular file</p>
+<p>                <strong><y>d</y></strong> : a directory</p>
+<p>                <strong><y>l</y></strong> : symbolic link</p>
+<p>                <strong><y>c</y></strong> : character device file</p>
+<p>                <strong><y>b</y></strong> : block device file</p>
+<p>                <strong><y>p</y></strong> : named pipe file</p>
+<p>                <strong><y>s</y></strong> : local socket file
  <br>
  </p>
-<h2 id="manipulating-the-file-system">Manipulating the File System:</h2>
 <hr>
-<h3 id="pwd--get-absolute-path-to-current-directory"><strong><span style="color:orange">pwd</span></strong> := get absolute path to current directory</h3>
-<p> </p>
-<h3 id="touch--option---path----changes-file-access-timestamps-but-can-create-a-file"><strong><span style="color:orange">touch</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">PATH</span></strong> ]  := Changes file access timestamps, but CAN CREATE A FILE.</h3>
-<pre><code class="language-shell"><div>    -c, --no-create      := do not create any files
-    -h, --no-dereference := affect symbolic link instead of referenced file.
-                            (useful only on sys. that can change timestamps of a symlink)
-</div></code></pre>
-<p> </p>
-<h4 id="sidenote-1"><span style="color:SteelBlue">SideNote:</span></h4>
-<p>    <span style="color:SteelBlue">** File names beggining with ' . ' are HIDDEN FILES </span></p>
-<pre><code class="language-shell"><div>    USE THIS to SHOW HIDDEN FILES ANY DIRECTORIES:
-        | ls -A 
-</div></code></pre>
-<p> </p>
-<h3 id="mkdir--option---path----make-a-directory"><strong><span style="color:orange">mkdir</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">PATH</span></strong> ]  := Make a directory</h3>
-<pre><code class="language-shell"><div>	-p  := make parent directories as needed **Generates NO ERROR MESSAGES
-	-v  := &#x27;verbose&#x27; print message for each dir created
-</div></code></pre>
-<p> </p>
-<h3 id="mv--option---source_path---dest_path----move-or-rename-filedirectory"><strong><span style="color:orange">mv</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">SOURCE_PATH</span></strong> ] [ <strong><span style="color:red">DEST_PATH</span></strong> ]  := Move OR RENAME file/directory</h3>
-<pre><code class="language-shell"><div>	-b  := backup 
-	-n  := &#x27;no clobber&#x27; meaning DO NOT OVERWRITE
-</div></code></pre>
-<p> </p>
-<h3 id="rm--option---path----remove-file-or-directory"><strong><span style="color:orange">rm</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">PATH</span></strong> ]  := Remove file or directory</h3>
-<pre><code class="language-shell"><div>	-i  := prompt before every removal 
-	-r  := remove RECURSIVELY
-	-v  := display what is being done 
-    -f  := ignore nonexsitent files and args, never prompt
-</div></code></pre>
-<p>    <span style="color:SteelBlue">** Using 'rm -if ...' WILL NOT prompt you before every removal as the -f options takes precidence. </span><br>
+<h2 id="alter-file-permissions-from-the-command-line">Alter File Permissions from the Command Line:</h2>
+<h3 id="ochmodo-roptionsr-rmoder-rfiler--change-file-permissions"><strong><o>chmod</o></strong> [<r>OPTIONS</r>] [<r>MODE</r>] [<r>FILE</r>] := change file permissions</h3>
+<pre><code><code><div>    -c, --changes := like verbose but only report when change is made
+    -v, --verbose := output diagnostec for ALL PROCESSED FILES
+    -f, --silent, --quiet := supress MOST error messages
+
+    -R, --recursive := change files &amp; directories RECURSIVELY
+</div></code></code></pre>
+<p>[<r>MODE</r>] := WHO / WHAT / WHICH</p>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/7.2_chmod1.png" alt="Alt text"></p>
+<h3 id="prchmod-examplepr"><pr>chmod EXAMPLE:</pr></h3>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/7.3_chmod2.png" alt="Alt text"></p>
+<p>Some interesting things happened here</p>
+<ul>
+<li>testText.txt <r>changed permissions</r></li>
+<li>testText_HARDLINK.txt <r>changed permissions</r></li>
+</ul>
+<p>   ** THIS MEANS THAT <o>chmod</o> WILL CHANGE <db>HARDLINKS</db>
+ 
  </p>
-<h3 id="rmdir--removes-empty-directories"><strong><span style="color:orange">rmdir</span></strong> := Removes empty directories</h3>
+<h3 id="chmod-in-octal-mode"><strong>chmod in OCTAL MODE:</strong></h3>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/7.4_chmod3.png" alt="Alt text"></p>
+<pre><code><code><div>chmod ### [FILE_NAME] -&gt; ? ??? ??? ???
+</div></code></code></pre>
+<h2 id="1-1-1--1-1-1--1-1-1">1 1 1 | 1 1 1 | 1 1 1</h2>
+<h2 id="r-w-x--r-w-x--r-w-x">R W X | R W X | R W X</h2>
 <p> 
  </p>
-<h2 id="links-between-files">Links Between Files</h2>
+<h2 id="oct--5--4---1">OCT:   5   |   4   |    1</h2>
+<h2 id="bin-1-0-1--1-0-0--0-0-1">BIN: 1 0 1 | 1 0 0 | 0 0 1</h2>
+<h2 id="res-r---x--r----------x">RES: R - X | R - - | - - X</h2>
+<p> 
+ </p>
+<h2 id="7---rwx--3----wx">7 -&gt; rwx | 3 -&gt; -wx</h2>
+<h2 id="6---rw---2----w-">6 -&gt; rw- | 2 -&gt; -w-</h2>
+<h2 id="5---r-x--1-----x">5 -&gt; r-x | 1 -&gt; --x</h2>
+<h2 id="4---r----0------">4 -&gt; r-- | 0 -&gt; ---</h2>
+<h2 id="prexamplespr"><pr>Examples</pr>:</h2>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/7.5_chmod4.png" alt="Alt text">
+ </p>
 <hr>
-<p>You can create multiple file name that point to the same file. These file names are called links. You can create two types of these links: Hard Links &amp; Soft Links.</p>
-<h3 id="hard-links"><strong><span style="color:DodgerBlue">Hard Links:</span></strong></h3>
-<pre><code>:= Another file that points to the SAME DATA, acting exactly as the original file. After creation there is no difference between original nad new Hard Link file.
-</code></pre>
-<h3 id="you-can-determine-how-many-hls-a-file-has-by-executing-the-following-command">You can determine how many HLs a file has by executing the following command:</h3>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.2_HardLink.png" alt="">
- </p>
-<h3 id="to-create-a-hard-link">To Create a Hard Link:</h3>
-<h3 id="ln--option---target---destination----make-a-new-link"><strong><span style="color:orange">ln</span></strong> [ <strong><span style="color:red">OPTION</span></strong> ] [ <strong><span style="color:red">TARGET</span></strong> ] [ <strong><span style="color:red">DESTINATION</span></strong> ]  := Make a new link</h3>
-<pre><code class="language-shell"><div>	-b  := make a backup of each existing destination file
-    -f  := remove existing destination files
-    -i  --interactive := prompt when removing destinations
-    -L  --logical     := dereference TARGETs that are symbolic links
-    -s  := creates symbolic link 
-</div></code></pre>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.2_HardLinkGuide.png" alt=""></p>
-<p>**To check if there is a <em><span style="color:DodgerBlue">Hard Link</span></em> between files execute the following command (' ln -i ') and compare the inode numbers (circled in red below).</p>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.2_HardLinkDetect.png" alt=""></p>
-<p>** Even if the original file is deleted you CAN STILL ACESS THE CONTENTS provided there is at least one other HL that exists. Data is deleted from storage whith the LAST HL.</p>
-<h3 id="limitations-of-hard-links"><span style="color:Red">Limitations of Hard Links:</span></h3>
-<pre><code><code><div>    - You can only use Hard Links with regular files (no dir or special files)
-    - Can only use HL if both files ARE IN THE SAME FILE SYSTEM (Ex. Diff. Mounted Dir)
-</div></code></code></pre>
-<h3 id="df--list-all-dirs-on-different-file-systems"><strong><span style="color:orange">df</span></strong> := List all dirs on different file systems</h3>
-<p> <br>
- </p>
-<h3 id="symbolic-links"><strong><span style="color:DodgerBlue">Symbolic Links:</span></strong></h3>
-<pre><code>:= Also known as a 'Soft Link' , not a regular file but a special type of file that points to an existing FILE OR DIRECTORY. 
+<h2 id="change-file--directory-ownership">Change File &amp; Directory Ownership:</h2>
+<h3 id="ochowno-roptionsr-rownerr-lbgrouplb-rfiler--change-file-owner-and-group"><strong><o>chown</o></strong> [<r>OPTIONS</r>] [<r>OWNER</r> <lb>[:GROUP]</lb>] [<r>FILE</r>] := change file owner AND group</h3>
+<pre><code><code><div>    -c, --changes := like verbose but only report when change is made
+    -v, --verbose := output diagnostec for ALL PROCESSED FILES
+    -f, --silent, --quiet := supress MOST error messages
 
-A symbolic link pointing to a directory ACTS as that directory. So when you switch to the symbolic link it takes to the appropriately linked directory. 
-</code></pre>
-<h3 id="advantages-over-hard-links"><span style="color:Green">Advantages Over Hard Links:</span></h3>
-<pre><code><code><div>    - Symbolic links can link two files on different systems
-    - Symbolic links can point to a directory or special file, not just to a regular file. 
+    --dereference := affect the referant instead of symbolic link (IS DEFAULT)
+    -h, --no-derefernece := affect actual symbolic link and NOT referant
+
+    --from=[CURRENT_OWNER:CURRENT_GROUP] := change only if owner/group matches 
+                                            given CURRENT_WONER or CURRENT_GROUP
+
+    -R, --recursive := operate recursively
+
+    -H := if cmd line argument is a symbolic link to a dir, TRAVERSE IT
+    -L := traverse EVERY symbolic link to a directory encountered
+    -P := DO NOT traverse any symbolic link (IS DEFAULT)
 </div></code></code></pre>
-<h3 id="to-create-a-symbolic-link">To Create a Symbolic Link:</h3>
-<pre><code><code><div>    ln -s [OPTIONS] [TARGET] [DESTINATION]
-</div></code></code></pre>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.3_SymbolicLinkGuide.png" alt="">
-    ** The '-' missing and 'l' in its place before the symboLink file indicates that it is a <span style="color:DodgerBlue">SYMBOLIC LINK </span></p>
-<p>    ** When a file with a symbolic link gets deleted, the <span style="color:DodgerBlue">SYMBOLIC LINK </span> becomes a <span style="color:red">DANGLING SYMBOLIC LINK </span>
- <br>
- </p>
-<h3 id="a-hard-link--points-to-data">A <span style="color:DodgerBlue">HARD LINK </span> POINTS TO DATA</h3>
-<h3 id="a-symbolic-link--points-a-name-to-another-name">A <span style="color:DodgerBlue">SYMBOLIC LINK </span> POINTS A NAME TO ANOTHER NAME</h3>
-<p> <br>
- </p>
-<h2 id="match-file-names-with-shell-expansions">Match File Names with Shell Expansions:</h2>
+<p> </p>
 <hr>
-<h3 id="pattern-matching">Pattern Matching:</h3>
-<table>
-<thead>
-<tr>
-<th>Pattern</th>
-<th>Matches</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>*</td>
-<td>Any string of zero or more characters.</td>
-</tr>
-<tr>
-<td>?</td>
-<td>Any single character.</td>
-</tr>
-<tr>
-<td>[abc…​]</td>
-<td>Any one character in the enclosed class (between the square brackets).</td>
-</tr>
-<tr>
-<td>[!abc…​]</td>
-<td>Any one character not in the enclosed class.</td>
-</tr>
-<tr>
-<td>[^abc…​]</td>
-<td>Any one character not in the enclosed class.</td>
-</tr>
-<tr>
-<td>[[:alpha:]]</td>
-<td>Any alphabetic character.</td>
-</tr>
-<tr>
-<td>[[:lower:]]</td>
-<td>Any lowercase character.</td>
-</tr>
-<tr>
-<td>[[:upper:]]</td>
-<td>Any uppercase character.</td>
-</tr>
-<tr>
-<td>[[:alnum:]]</td>
-<td>Any alphabetic character or digit.</td>
-</tr>
-<tr>
-<td>[[:punct:]]</td>
-<td>Any printable character that is not a space or alphanumeric.</td>
-</tr>
-<tr>
-<td>[[:digit:]]</td>
-<td>Any single digit from 0 to 9.</td>
-</tr>
-<tr>
-<td>[[:space:]]</td>
-<td>Any single white space character, which might include tabs, newlines, carriage returns, form feeds, or spaces.</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<p> <br>
- </p>
-<h3 id="tilde-expansion">Tilde Expansion:</h3>
-<p>     Tilde <span style="color:Yellow">(~) matches the current user's home directory. </span>  If it starts with a string of characters other than slash (/), then the shell interprets the string up to the slash as a user name.</p>
-<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/1.4_TildeExpansion.png" alt=""></p>
-<h3 id="brace-expansion">Brace Expansion:</h3>
-<p>     Used to generate discretionary strings of characters. So basically all strings of characters seperated by a comma, is used to create multiple versions with each string in the brackets:</p>
-<pre><code><code><div>[user@host glob]$ echo {Sunday,Monday,Tuesday,Wednesday}.log
-        Sunday.log Monday.log Tuesday.log Wednesday.log
+<h2 id="manage-default-permissions--file-access">Manage DEFAULT Permissions &amp; File Access:</h2>
+<h3 id="special-file-permissions">Special File Permissions:</h3>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/7.6_Spec_Perm.png" alt="Alt text"></p>
+<h3 id="oumasko-rr--displays-the-systems-current-dbumaskdb-or-changes-it-if-rr-is-specified"><strong><o>umask</o></strong> [<r>####</r>] := displays the systems current <db>umask</db> or changes it if [<r>####</r>] is specified..</h3>
+<p>    A <db>umask</db> is what dictates the <lb>DEFAULT FILE PERMISSIONS</lb> of the system. An imporant thing to note is that <db>umask</db> can <r> ONLY REMOVE PERMISSIONS FROM DEFAULT</r>. That means that you <r>cannot</r> <y>ADD</y> executable (<r>x</r>) permissions to files using <db>umask</db>.</p>
+<p><img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/7.7_umask1.png" alt="Alt text">
+<img src="file:////Users/fkestner/Desktop/Redhat-Notes/Images/7.8_umask2.png" alt="Alt text"></p>
 
-[user@host glob]$ echo file{1..3}.txt
-        file1.txt file2.txt file3.txt
-
-[user@host glob]$ echo file{a..c}.txt
-        filea.txt fileb.txt filec.txt
-
-[user@host glob]$ echo file{a,b}{1,2}.txt
-        filea1.txt filea2.txt fileb1.txt fileb2.txt
-
-[user@host glob]$ echo file{a{1,2},b,c}.txt
-        filea1.txt filea2.txt fileb.txt filec.txt
-</div></code></code></pre>
-<h3 id="variable-expansion">Variable Expansion:</h3>
-<p>     A variable acts like a named container, storing a value in memory. Variables simplify accessing and modifying the stored data either from the command line or within a script.</p>
-<h4 id="declare-a-variable">Declare a Variable:</h4>
-<pre><code class="language-shell"><div>[user@host ~]$ VARIABLENAME=value
-</div></code></pre>
-<h4 id="use-a-variable">Use a Variable:</h4>
-<pre><code class="language-shell"><div>[user@host ~]$ USERNAME=operator
-[user@host ~]$ echo $USERNAME
-    operator
----------------------------------
-[user@host ~]$ USERNAME=operator
-[user@host ~]$ echo ${USERNAME}
-    operator
-</div></code></pre>
-<h4 id="command-subtitution">Command Subtitution:</h4>
-<p>     Allows the output of a command to replace the command itself on the command line. Basically enclosing a command in another command.</p>
-<pre><code class="language-shell"><div>[user@host glob]$ echo Today is $(date +%A).
-Today is Wednesday.
-
-[user@host glob]$ echo The time is $(date +%M) minutes past $(date +%l%p).
-The time is 26 minutes past 11AM.
-</div></code></pre>
-<h4 id="escape-characters">    Escape Characters:</h4>
-<p>         Double Quotations (&quot; &quot;) Marsks Supressing Globbing &amp; Shell Expansion</p>
-<pre><code><code><div>[user@host glob]$ myhost=$(hostname -s); echo $myhost
-host
-
-[user@host glob]$ echo &quot;***** hostname is ${myhost} *****&quot;
-***** hostname is host *****
-</div></code></code></pre>
-<p>         Single Quotes (' ') to Interpret ALL TEXT LITERALLY:</p>
-<pre><code><code><div>[user@host glob]$ echo &quot;Will variable $myhost evaluate to $(hostname -s)?&quot;
-Will variable host evaluate to host?
-
-[user@host glob]$ echo 'Will variable $myhost evaluate to $(hostname -s)?'
-Will variable $myhost evaluate to $(hostname -s)?
-</div></code></code></pre>
-
-        <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
         
     </body>
     </html>
