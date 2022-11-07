@@ -132,6 +132,12 @@ chmod ### [FILE_NAME] -> ? ??? ??? ???
 ```
 &nbsp; 
 
+### **<o>chgrp</o>** [<r>OPTIONS</r>] [<r>GROUP</r>] [<r>FILE</r>] := change group ownership
+```
+    -R, --recursive := change ownership recursively
+```
+&nbsp; 
+
 --- 
 ## Manage DEFAULT Permissions & File Access:
 ### Special File Permissions:
