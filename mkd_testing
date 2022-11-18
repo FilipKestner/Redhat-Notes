@@ -1,3 +1,15 @@
+<style>
+r { color: Red }
+o { color: Orange }
+b { color: Blue }
+y { color: Yellow }
+lb { color: DeepPink}
+db { color: DodgerBlue}
+pr { color: Purple }
+</style>
+
+
+
 testing
 
 ## Testing
@@ -37,3 +49,15 @@ if(true){
 COLORING TEXT:
 
 <span style="color:red">PATH</span>
+
+
+
+<pre>
+    FORMAT
+
+            WHILE
+
+                    <strong>MAINTAINING</strong>
+                                <pr>COLORS</pr>
+
+</pre>
